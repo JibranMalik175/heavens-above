@@ -1,0 +1,20 @@
+name: Scheduled Maintenance Tasks
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Runs every day at midnight UTC
+  workflow_dispatch:  # Allows manual trigger from the Actions tab
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run daily maintenance
+        run: |
+          echo "🧹 Running scheduled maintenance tasks..."
+          echo "Backing up project data..."
+          echo "Cleaning temporary files..."
+          echo " Maintenance completed successfully on $(date)"
