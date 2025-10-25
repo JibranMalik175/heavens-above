@@ -1,0 +1,33 @@
+name: Generate Release Notes
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:  # Allows manual trigger too
+
+jobs:
+  generate-release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Release Notes
+        id: notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { context } = github;
+            const release = context.payload.release;
+            const fs = require('fs');
+            const notes = `# 📝 Release Notes for ${release.tag_name}\n\n${release.body || 'No description provided.'}\n\nPublished on: ${release.published_at}`;
+            fs.writeFileSync('RELEASE_NOTES.md', notes);
+            console.log("✅ Release notes generated.");
+
+      - name: Commit and push release notes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add RELEASE_NOTES.md
+          git commit -m "Add release notes for new version"
+          git push
